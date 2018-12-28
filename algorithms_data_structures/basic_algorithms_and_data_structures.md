@@ -1,5 +1,4 @@
 # Basic algorithms and data structures
-TBD: search
 
 ## Lists
 
