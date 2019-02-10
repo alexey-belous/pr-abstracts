@@ -1,0 +1,67 @@
+# Universal Plug and Play
+
+Universal Plug and Play (UPnP) is a set of networking protocols that permits networked devices, such as personal computers, printers, Internet gateways, Wi-Fi access points and mobile devices to seamlessly discover each other's presence on the network and establish functional network services for data sharing, communications, and entertainment. UPnP is intended primarily for residential networks without enterprise-class devices.
+
+The UPnP technology was promoted by the UPnP Forum, a computer industry initiative to enable simple and robust connectivity to stand-alone devices and personal computers from many different vendors. The Forum consisted of over eight hundred vendors involved in everything from consumer electronics to network computing. Since 2016, all UPnP efforts are now managed by the Open Connectivity Foundation (OCF).
+
+UPnP assumes the network runs Internet Protocol (IP) and then leverages HTTP, SOAP and XML on top of IP, in order to provide device/service description, actions, data transfer and eventing. Device search requests and advertisements are supported by running HTTP on top of UDP (port 1900) using multicast (known as HTTPMU). Responses to search requests are also sent over UDP, but are instead sent using unicast (known as HTTPU).
+
+Conceptually, UPnP extends plug and play—a technology for dynamically attaching devices directly to a computer—to zero configuration networking for residential and SOHO wireless networks. UPnP devices are "plug and play" in that, when connected to a network, they automatically establish working configurations with other devices.
+
+UPnP is generally regarded as unsuitable for deployment in business settings for reasons of economy, complexity, and consistency: the multicast foundation makes it chatty, consuming too many network resources on networks with a large population of devices; the simplified access controls don't map well to complex environments; and it does not provide a uniform configuration syntax such as the CLI environments of Cisco IOS or JUNOS.
+
+## Overview
+The UPnP architecture allows device-to-device networking of consumer electronics, mobile devices, personal computers, and networked home appliances. It is a distributed, open architecture protocol based on established standards such as the Internet Protocol Suite (TCP/IP), HTTP, XML, and SOAP. UPnP control points (CPs) are devices which use UPnP protocols to control UPnP controlled devices (CDs).
+
+The UPnP architecture supports zero configuration networking. A UPnP compatible device from any vendor can dynamically join a network, obtain an IP address, announce its name, advertise or convey its capabilities upon request, and learn about the presence and capabilities of other devices. Dynamic Host Configuration Protocol (DHCP) and Domain Name System (DNS) servers are optional and are only used if they are available on the network. Devices can disconnect from the network automatically without leaving state information.
+
+UPnP was published as a 73-part international standard, ISO/IEC 29341, in December, 2008.
+
+Other UPnP features include:
+#### Media and device independence
+UPnP technology can run on many media that support IP including Ethernet, FireWire, IR (IrDA), home wiring (G.hn) and RF (Bluetooth, Wi-Fi). No special device driver support is necessary; common network protocols are used instead.
+#### User interface (UI) Control
+Optionally, the UPnP architecture enables devices to present a user interface through a web browser (see Presentation below).
+#### Operating system and programming language independence
+Any operating system and any programming language can be used to build UPnP products. UPnP stacks are available for most platforms and operating systems in both closed and open source forms.
+#### Extensibility
+Each UPnP product can have device-specific services layered on top of the basic architecture. In addition to combining services defined by UPnP Forum in various ways, vendors can define their own device and service types, and can extend standard devices and services with vendor-defined actions, state variables, data structure elements, and variable values.
+
+## Protocol
+UPnP uses common Internet technologies. It assumes the network must run Internet Protocol (IP) and then leverages HTTP, SOAP and XML on top of IP, in order to provide device/service description, actions, data transfer and eventing. Device search requests and advertisements are supported by running HTTP on top of UDP using multicast (known as HTTPMU). Responses to search requests are also sent over UDP, but are instead sent using unicast (known as HTTPU). UPnP uses UDP due to its lower overhead in not requiring confirmation of received data and retransmission of corrupt packets. HTTPU and HTTPMU were initially submitted as an Internet Draft but it expired in 2001; these specifications have since been integrated into the actual UPnP specifications.
+
+UPnP uses UDP port 1900 and all used TCP ports are derived from the SSDP alive and response messages.
+
+### Addressing
+The foundation for UPnP networking is IP addressing. Each device must implement a DHCP client and search for a DHCP server when the device is first connected to the network. If no DHCP server is available, the device must assign itself an address. The process by which a UPnP device assigns itself an address is known within the UPnP Device Architecture as AutoIP. In UPnP Device Architecture Version 1.0, AutoIP is defined within the specification itself; in UPnP Device Architecture Version 1.1, AutoIP references IETF RFC 3927. If during the DHCP transaction, the device obtains a domain name, for example, through a DNS server or via DNS forwarding, the device should use that name in subsequent network operations; otherwise, the device should use its IP address.
+
+### Discovery
+Once a device has established an IP address, the next step in UPnP networking is discovery. The UPnP discovery protocol is known as the Simple Service Discovery Protocol (SSDP). When a device is added to the network, SSDP allows that device to advertise its services to control points on the network. This is achieved by sending SSDP alive messages. When a control point is added to the network, SSDP allows that control point to actively search for devices of interest on the network or listen passively to the SSDP alive messages of device. The fundamental exchange is a discovery message containing a few essential specifics about the device or one of its services, for example, its type, identifier, and a pointer (network location) to more detailed information.
+
+### Description
+After a control point has discovered a device, the control point still knows very little about the device. For the control point to learn more about the device and its capabilities, or to interact with the device, the control point must retrieve the device's description from the location (URL) provided by the device in the discovery message. The UPnP Device Description is expressed in XML and includes vendor-specific manufacturer information like the model name and number, serial number, manufacturer name, (presentation) URLs to vendor-specific web sites, etc. The description also includes a list of any embedded services. For each service, the Device Description document lists the URLs for control, eventing and service description. Each service description includes a list of the commands, or actions, to which the service responds, and parameters, or arguments, for each action; the description for a service also includes a list of variables; these variables model the state of the service at run time, and are described in terms of their data type, range, and event characteristics.
+
+### Control
+Having retrieved a description of the device, the control point can send actions to a device's service. To do this, a control point sends a suitable control message to the control URL for the service (provided in the device description). Control messages are also expressed in XML using the Simple Object Access Protocol (SOAP). Much like function calls, the service returns any action-specific values in response to the control message. The effects of the action, if any, are modeled by changes in the variables that describe the run-time state of the service.
+
+### Event notification
+Another capability of UPnP networking is event notification, or eventing. The event notification protocol defined in the UPnP Device Architecture is known as General Event Notification Architecture (GENA). A UPnP description for a service includes a list of actions the service responds to and a list of variables that model the state of the service at run time. The service publishes updates when these variables change, and a control point may subscribe to receive this information. The service publishes updates by sending event messages. Event messages contain the names of one or more state variables and the current value of those variables. These messages are also expressed in XML. A special initial event message is sent when a control point first subscribes; this event message contains the names and values for all evented variables and allows the subscriber to initialize its model of the state of the service. To support scenarios with multiple control points, eventing is designed to keep all control points equally informed about the effects of any action. Therefore, all subscribers are sent all event messages, subscribers receive event messages for all "evented" variables that have changed, and event messages are sent no matter why the state variable changed (either in response to a requested action or because the state the service is modeling changed).
+
+### Presentation
+The final step in UPnP networking is presentation. If a device has a URL for presentation, then the control point can retrieve a page from this URL, load the page into a web browser, and depending on the capabilities of the page, allow a user to control the device and/or view device status. The degree to which each of these can be accomplished depends on the specific capabilities of the presentation page and device.
+
+## NAT traversal
+One solution for NAT traversal, called the Internet Gateway Device Protocol (IGD Protocol), is implemented via UPnP. Many routers and firewalls expose themselves as Internet Gateway Devices, allowing any local UPnP control point to perform a variety of actions, including retrieving the external IP address of the device, enumerate existing port mappings, and add or remove port mappings. By adding a port mapping, a UPnP controller behind the IGD can enable traversal of the IGD from an external address to an internal client.
+
+## Problems with UPnP
+### Authentication
+The UPnP protocol, as default, does not implement any authentication, so UPnP device implementations must implement the additional Device Protection service, or implement the Device Security Service. There also exists a non-standard solution called UPnP-UP (Universal Plug and Play - User Profile) which proposes an extension to allow user authentication and authorization mechanisms for UPnP devices and applications. Unfortunately, many UPnP device implementations lack authentication mechanisms, and by default assume local systems and their users are completely trustworthy.
+
+When the authentication mechanisms are not implemented, routers and firewalls running the UPnP IGD protocol are vulnerable to attack. For example, Adobe Flash programs running outside the sandbox of the browser (e.g. this requires specific version of Adobe Flash with acknowledged security issues) are capable of generating a specific type of HTTP request which allows a router implementing the UPnP IGD protocol to be controlled by a malicious web site when someone with a UPnP-enabled router simply visits that web site. This only applies to the "firewall-hole-punching"-feature of UPnP; it does not apply when the IGD does not support UPnP or UPnP has been disabled on the IGD. Also, not all routers can have such things as DNS server settings altered by UPnP because much of the specification (including LAN Host Configuration) is optional for UPnP enabled routers. As a result, some UPnP devices ship with UPnP turned off by default as a security measure.
+
+### Access from the Internet
+In 2011, researcher Daniel Garcia developed a tool designed to exploit a flaw in some UPnP IGD device stacks that allow UPnP requests from the Internet. The tool was made public at DEFCON 19 and allows portmapping requests to external IP addresses from the device and internal IP addresses behind the NAT. The problem is widely propagated around the world, with scans showing millions of vulnerable devices at a time.
+
+In January 2013 the security company Rapid7 in Boston reported on a six-month research programme. A team scanned for signals from UPnP-enabled devices announcing their availability for internet connection. Some 6900 network-aware products from 1500 companies at 81 million IP-addresses responded to their requests. 80% of the devices are home routers; others include printers, webcams and surveillance cameras. Using the UPnP-protocol, many of those devices can be accessed and/or manipulated.
+
+In February 2013, the UPnP forum responded in a press release by recommending more recent versions of the used UPnP stacks, and by improving the certification program to include checks to avoid further such issues.
