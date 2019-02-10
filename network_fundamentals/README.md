@@ -1,7 +1,7 @@
 # Network fundamentals
 
 ## Contents:
-1. OSI
-2. TCP/IP
-3. UPnP
-4. VPN
+1. [OSI](./OSI.md)
+2. [TCP/IP](./TCP_IP.md)
+3. [UPnP](./UPnP.md)
+4. [VPN](./VPN.md)
